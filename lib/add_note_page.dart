@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:notes_app/db_provider.dart';
+import 'package:notes_app/home_page.dart';
 import 'package:notes_app/note_model.dart';
+import 'package:provider/provider.dart';
 import 'db_helper.dart';
 
 class AddNotePage extends StatelessWidget{
@@ -39,16 +42,19 @@ class AddNotePage extends StatelessWidget{
             child: IconButton(
             onPressed: () async{
                 if(titleController.text.isNotEmpty && descriptionController.text.isNotEmpty){
-                bool check = await dbHelper.addNote(NoteModel(
+                  context.read<DbProvider>().addNotes(noteModel: NoteModel(
+                      title: titleController.text,
+                      description: descriptionController.text,
+                      createdAt: DateTime.now().millisecondsSinceEpoch.toString()));
+               /* bool check = await dbHelper.addNote(NoteModel(
                     title: titleController.text,
                     description: descriptionController.text,
-                    createdAt: DateTime.now().millisecondsSinceEpoch.toString()));
-                if(check){
-                  Navigator.pop(context);
-                  titleController.clear();
-                  descriptionController.clear();
-              }
-          }
+                    createdAt: DateTime.now().millisecondsSinceEpoch.toString()));*/
+
+                    Navigator.pop(context);
+                    titleController.clear();
+                    descriptionController.clear();
+                }
               },
               icon: const Text("Save",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
               style: ButtonStyle(shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),

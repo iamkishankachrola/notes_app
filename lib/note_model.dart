@@ -19,6 +19,4 @@ class NoteModel{
       DbHelper.NOTE_COLUMN_DESCRIPTION : description,
       DbHelper.NOTE_COLUMN_CREATED_AT : createdAt
     };
-
-
 }

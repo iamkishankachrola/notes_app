@@ -48,12 +48,12 @@ class DbHelper{
     return myNotes;
   }
 
-  Future<bool> updateNote({required String title,required String description,required int id}) async{
+  Future<bool> updateNote(NoteModel noteModel) async{
     Database db = await initDB();
     int rowsEffected = await db.update(TABLE_NOTE, {
-      NOTE_COLUMN_TITLE : title,
-      NOTE_COLUMN_DESCRIPTION : description
-    }, where: "$NOTE_COLUMN_ID = $id");
+      NOTE_COLUMN_TITLE : noteModel.title,
+      NOTE_COLUMN_DESCRIPTION : noteModel.description
+    }, where: "$NOTE_COLUMN_ID = ${noteModel.id}");
     return rowsEffected>0;
   }
 

@@ -1,13 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:notes_app/add_note_page.dart';
+import 'package:notes_app/db_provider.dart';
 import 'package:notes_app/home_page.dart';
+import 'package:notes_app/note_model.dart';
+import 'package:provider/provider.dart';
 import 'db_helper.dart';
 
 class UpdateNotePage extends StatefulWidget{
   int id;
   String title;
   String description;
-  UpdateNotePage({required this.id, required this.title, required this.description});
+  String createdAt;
+  UpdateNotePage({required this.id, required this.title, required this.description,required this.createdAt});
   @override
   State<UpdateNotePage> createState() => _UpdateNotePageState();
 }
@@ -51,15 +56,12 @@ class _UpdateNotePageState extends State<UpdateNotePage> {
             child: IconButton(
               onPressed: () async{
                 if(titleController.text.isNotEmpty && descriptionController.text.isNotEmpty){
-                    bool check = await dbHelper.updateNote(
-                        title: titleController.text,
-                        description: descriptionController.text,
-                        id: widget.id);
-                    if (check) {
+                    //bool check = await dbHelper.updateNote(NoteModel(title: titleController.text, description: descriptionController.text, createdAt: widget.createdAt,id: widget.id));
+                      context.read<DbProvider>().updateNotes(noteModel: NoteModel(title: titleController.text, description: descriptionController.text, createdAt: widget.createdAt,id: widget.id));
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(),));
                       titleController.clear();
                       descriptionController.clear();
-                    }
+
                 }
 
               },

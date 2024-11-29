@@ -2,15 +2,27 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:notes_app/add_note_page.dart';
+import 'package:notes_app/db_provider.dart';
 import 'package:notes_app/note_model.dart';
 import 'package:notes_app/show_note_page.dart';
+import 'package:provider/provider.dart';
 import 'db_helper.dart';
-
+void main(){
+  runApp(ChangeNotifierProvider(create: (context) => DbProvider(),child: NotesApp(),),);
+}
+class NotesApp extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: HomePage(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
 class HomePage extends StatefulWidget{
   @override
   State<HomePage> createState() => _HomePageState();
 }
-
 class _HomePageState extends State<HomePage> {
   DbHelper dbHelper = DbHelper.getInstance();
   List<NoteModel> notesData = [ ];
@@ -19,15 +31,11 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    getNotes();
-  }
-  void getNotes() async{
-    notesData = await dbHelper.fetchAllNote();
-    setState(() {
-    });
+    context.read<DbProvider>().getInitialNotes();
   }
   @override
   Widget build(BuildContext context) {
+    notesData = context.watch<DbProvider>().getAllNotes();
     return Scaffold(
       backgroundColor: const Color(0xff252525),
       appBar: AppBar(
@@ -50,7 +58,7 @@ class _HomePageState extends State<HomePage> {
       body:notesData.isNotEmpty ?Padding(
         padding: const EdgeInsets.only(left: 10,right: 10,top: 5),
         child: GridView.builder(
-          gridDelegate:  const SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
@@ -60,7 +68,7 @@ class _HomePageState extends State<HomePage> {
           itemBuilder: (context, index) {
             return  InkWell(
               onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ShowNotePage(id: notesData[index].id!,title: notesData[index].title,description: notesData[index].description,createdAt: notesData[index].createdAt,),)).then((value) => getNotes());
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ShowNotePage(id: notesData[index].id!,title: notesData[index].title,description: notesData[index].description,createdAt: notesData[index].createdAt,),));
               },
               child: Card(
                 color: cardsColor[Random().nextInt(cardsColor.length)],
@@ -81,12 +89,12 @@ class _HomePageState extends State<HomePage> {
           },),
       ) :const Center(child: Text("No notes yet!!",style: TextStyle(color: Colors.white,fontSize: 20),)),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 20,right: 20),
+        padding: const EdgeInsets.only(bottom: 20,right: 10),
         child: Align(
           alignment: Alignment.bottomRight,
           child: FloatingActionButton(
             onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => AddNotePage(),)).then((value)=>getNotes());
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AddNotePage(),));
             },
             backgroundColor: const Color(0xff3B3B3B),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),

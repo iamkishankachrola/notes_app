@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:notes_app/add_note_page.dart';
 import 'package:notes_app/db_helper.dart';
+import 'package:notes_app/db_provider.dart';
+import 'package:notes_app/home_page.dart';
 import 'package:notes_app/update_note_page.dart';
+import 'package:provider/provider.dart';
 
 class ShowNotePage extends StatefulWidget{
   int id;
@@ -46,7 +50,7 @@ class _ShowNotePageState extends State<ShowNotePage> {
             padding: const EdgeInsets.only(right: 12),
             child: IconButton(
               onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateNotePage(id: widget.id,title: widget.title,description: widget.description,),));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateNotePage(id: widget.id,title: widget.title,description: widget.description,createdAt: widget.createdAt,),));
               },
               icon: Image.asset("assets/images/edit.png",width: 16,height: 16,color: Colors.white,),
               style: ButtonStyle(shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
@@ -70,7 +74,7 @@ class _ShowNotePageState extends State<ShowNotePage> {
         ),
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 20,right: 20),
+        padding: const EdgeInsets.only(bottom: 20,right: 10),
         child: Align(
           alignment: Alignment.bottomRight,
           child: FloatingActionButton(
@@ -85,13 +89,11 @@ class _ShowNotePageState extends State<ShowNotePage> {
                       Navigator.pop(context);
                     }, child: const Text("No",style: TextStyle(color: Color(0xff3B3B3B)),)),
                     TextButton(onPressed: () async{
-                      bool check = await dbHelper.deleteNote(id: widget.id);
-                      if(check){
-                        Navigator.pop(context);
-                        setState(() {
+                     // bool check = await dbHelper.deleteNote(id: widget.id);
+                      context.read<DbProvider>().deleteNote(id: widget.id);
+                      Navigator.pop(context);
+                      Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => HomePage(),));
 
-                        });
-                      }
                     }, child: const Text("Yes",style: TextStyle(color: Color(0xff3B3B3B)),)),
                   ],
                 );
